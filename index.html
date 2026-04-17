@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Búp Sen Xanh - Gieo Hy Vọng, Vẽ Tương Lai</title>
+
+
+    <!-- Nhúng Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#20b4a2',
+                        secondary: '#11645a',
+                        mint: '#F0FFF4'
+                    }
+                }
+            }
+        }
+    </script>
+
+
+    <!-- Nhúng Fonts & Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Dancing+Script:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+
+    <!-- Nhúng html2canvas để xuất ảnh -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(180deg, #3fa9d0 0%, #5cbfe8 25%, #87d4f5 55%, #c2eaf9 80%, #dff4fd 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+
+        /* ========== MÂY TRẮNG ========== */
+        .sky-cloud {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.88);
+            border-radius: 60px;
+            z-index: 1;
+            pointer-events: none;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.4);
+        }
+
+        .sky-cloud::before {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.88);
+            border-radius: 50%;
+            width: 55%;
+            height: 170%;
+            top: -35%;
+            left: 18%;
+        }
+
+        .sky-cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.88);
+            border-radius: 50%;
+            width: 38%;
+            height: 140%;
+            top: -22%;
+            right: 12%;
+        }
+
+        @keyframes cloudDrift {
+            0% {
+                transform: translateX(0px);
+            }
+
+            50% {
+                transform: translateX(28px);
+            }
+
+            100% {
+                transform: translateX(0px);
+            }
+        }
+
+
+        /* 2. Tách dòng tiêu đề chia cấp */
+
+
+        /* Liquid Glass Chủ Đạo */
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(32, 180, 162, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        .liquid-glass:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(32, 180, 162, 0.15);
+            border: 1px solid rgba(32, 180, 162, 0.3);
+        }
+
+
+        /* Hiệu ứng kính lỏng cho cụm 3 ảnh */
+        .img-hover-group {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.5rem;
+        }
+
+
+        .img-hover-group img {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+
+        .img-hover-group:hover img {
+            transform: scale(1.1);
+        }
+
+
+        .img-hover-group::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.0);
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+            transition: all 0.5s ease;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+
+        .img-hover-group:hover::after {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+
+        /* Nút Pulse */
+        .btn-pulse {
+            transition: all 0.3s;
+        }
+
+
+        .btn-pulse:hover {
+            animation: pulse-border 1.5s infinite;
+            transform: translateY(-2px);
+        }
+
+
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0 rgba(32, 180, 162, 0.5);
+            }
+
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(32, 180, 162, 0);
+            }
+
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(32, 180, 162, 0);
+            }
+        }
+
+
+        /* Marquee */
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+
+
+        .marquee-content span {
+            padding-right: 50px;
+        }
+
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0%);
+            }
+
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+
+        /* Form Postcard CSS fix */
+        .radio-custom:checked+div {
+            background-color: theme('colors.primary');
+            color: white;
+            border-color: theme('colors.primary');
+        }
+
+
+        /* Offline Render Area cho Postcard */
+        #postcard-render-area {
+            position: fixed;
+            left: -9999px;
+            top: 0;
+            width: 1080px;
+            height: 1350px;
+            background-color: theme('colors.primary');
+            z-index: -100;
+        }
+
+
+        /* Navbar active underline indicator */
+        .nav-link {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: #20b4a2;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+
+        .nav-link.active {
+            color: #20b4a2;
+        }
+
+
+        /* Nút Tạo Thẻ Postcard trong navbar - nền riêng */
+        .nav-postcard-btn {
+            background: linear-gradient(135deg, #20b4a2, #11645a);
+            color: white !important;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-weight: 800;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(32, 180, 162, 0.35);
+        }
+
+
+        .nav-postcard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(32, 180, 162, 0.5);
+            background: linear-gradient(135deg, #11645a, #20b4a2);
+        }
+
+
+        .nav-postcard-btn::after {
+            display: none !important;
+        }
+    </style>
+</head>
+
+
+<body class="text-slate-800 relative antialiased pt-24">
+
+
+    <!-- ========== ĐÁM MÂY TRẮNG NỀN TRỜI ========== -->
+    <div class="sky-cloud"
+        style="width:220px;height:65px;top:6%;left:4%;animation:cloudDrift 18s ease-in-out infinite;opacity:0.85;">
+    </div>
+    <div class="sky-cloud"
+        style="width:300px;height:80px;top:12%;right:8%;animation:cloudDrift 24s ease-in-out infinite reverse;opacity:0.75;">
+    </div>
+    <div class="sky-cloud"
+        style="width:180px;height:55px;top:22%;left:42%;animation:cloudDrift 20s ease-in-out infinite 3s;opacity:0.65;">
+    </div>
+    <div class="sky-cloud"
+        style="width:250px;height:70px;top:38%;right:3%;animation:cloudDrift 22s ease-in-out infinite reverse 5s;opacity:0.5;">
+    </div>
+    <div class="sky-cloud"
+        style="width:160px;height:48px;top:50%;left:8%;animation:cloudDrift 26s ease-in-out infinite 2s;opacity:0.45;">
+    </div>
+
+
+    <!-- Navbar Highlight -->
+    <nav
+        class="fixed top-0 w-full z-50 transition-all duration-300 backdrop-blur-xl bg-white/70 border-b border-primary/20 shadow-sm pt-2">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-20">
+                <div
+                    class="flex-shrink-0 flex items-center gap-3 [&_img]:h-14 [&_img]:w-auto [&_img]:rounded-xl [&_img]:shadow-sm [&_img]:mix-blend-multiply">
+                    <img src="https://sv2.anhsieuviet.com/2026/04/17/5d6209b5-ea78-482f-b356-bd27b0ebc1ea.jpg"
+                        alt="Logo CFE Foundation" class="rounded-xl">
+                    <div class="hidden sm:flex flex-col">
+                        <span class="font-black text-primary text-xl tracking-tight leading-none mb-1">CFE
+                            FOUNDATION</span>
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Búp Sen Xanh</span>
+                    </div>
+                </div>
+                <!-- Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-8 font-bold text-slate-700">
+                        <a href="#" class="nav-link hover:text-primary transition-colors py-2">Trang chủ</a>
+                        <a href="#cau-chuyen" class="nav-link hover:text-primary transition-colors py-2">Câu chuyện dự
+                            án</a>
+                        <a href="#tri-an" class="nav-link nav-postcard-btn">Tạo Postcard</a>
+                        <a href="#lien-he" class="nav-link hover:text-primary transition-colors py-2">Liên hệ</a>
+                    </div>
+                </div>
+                <!-- Nút Tương tác Mobile -->
+                <div class="md:hidden flex items-center">
+                    <button class="text-primary p-2">
+                        <i data-lucide="menu" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container mx-auto px-4 py-4 max-w-6xl relative z-10">
+
+
+        <!-- Không còn logo ở giữa như trước đó vì đã đem lên Navbar. Nhưng tuân thủ yêu cầu 1 (Logo Dự Án chính giữa ở trên cùng), tôi vẫn chèn thêm cho chuẩn prompt -->
+        <div class="flex justify-center mb-10 mt-8 fade-in md:hidden">
+            <div
+                class="liquid-glass p-2 rounded-2xl shadow-md bg-white/80 [&_img]:h-24 [&_img]:w-auto [&_img]:rounded-xl [&_img]:object-contain [&_img]:block [&_img]:mx-auto">
+                <img src="https://sv2.anhsieuviet.com/2026/04/17/5d6209b5-ea78-482f-b356-bd27b0ebc1ea.jpg"
+                    alt="Logo CFE Foundation" class="rounded-xl">
+            </div>
+        </div>
+
+
+        <!-- Tiêu đề & Banner -->
+        <header class="text-center mb-16 slide-up scroll-mt-32" id="home">
+            <h1 class="font-black mb-8 px-4 uppercase flex flex-col items-center justify-center gap-4">
+                <span class="text-5xl md:text-6xl lg:text-[5rem] pb-2 uppercase text-center"
+                    style="color: white; -webkit-text-stroke: 2px #ff69b4; font-family: 'Agbalumo', cursive; letter-spacing: 0.02em; paint-order: stroke fill;">
+                    BÚP SEN XANH
+                </span>
+                <span
+                    class="text-base md:text-2xl lg:text-3xl tracking-[0.02em] md:tracking-[0.1em] font-bold border-t-2 md:border-t-[3px] border-white/40 pt-4 px-4 md:px-8 mt-1 text-center"
+                    style="color: white; -webkit-text-stroke: 1px #ff69b4; font-family: 'Agbalumo', cursive; paint-order: stroke fill;">
+                    GIEO HY VỌNG, VẼ TƯƠNG LAI
+                </span>
+            </h1>
+            <div
+                class="w-full liquid-glass p-3 rounded-[2.5rem] overflow-hidden relative shadow-2xl group border-2 border-white/80">
+                <div
+                    class="w-full rounded-3xl overflow-hidden [&_img]:w-full [&_img]:h-auto [&_img]:block [&_img]:transition-transform [&_img]:duration-700 group-hover:[&_img]:scale-105">
+                    <img src="https://sv2.anhsieuviet.com/2026/04/06/BND-2.png" alt="BND-2.png" border="0" alt="Banner">
+                </div>
+            </div>
+        </header>
+
+
+        <!-- Câu chuyện & 3 Ảnh -->
+        <section id="cau-chuyen"
+            class="liquid-glass p-8 md:p-12 rounded-[3.5rem] slide-up mb-12 border-t-2 border-l-2 border-white/60 scroll-mt-28">
+            <div class="grid lg:grid-cols-2 gap-12 items-stretch">
+                <!-- Cột Chữ -->
+                <div class="flex flex-col justify-center">
+                    <div class="inline-flex items-center gap-3 mb-8">
+                        <div class="p-3 bg-primary/10 rounded-2xl">
+                            <i data-lucide="book-open" class="text-primary w-8 h-8"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-slate-800 uppercase tracking-tight">Câu chuyện <span
+                                class="text-primary">dự án</span></h2>
+                    </div>
+
+
+                    <p class="text-lg text-slate-700 leading-relaxed font-medium mb-6 text-justify">
+                        "Trong hành trình tới tương lai, đôi khi những bước chân nhỏ bé cần thêm một điểm tựa để vững
+                        vàng hơn. <span class="font-bold text-primary text-xl">Búp Sen Xanh</span> - dự án thiện nguyện
+                        thuộc Quỹ Kiến tạo Tương lai CFE Foundation (CLB Doanh nhân Tương lai - NEU), ra đời với sứ mệnh
+                        trở thành điểm tựa ấy, mang đến sự hỗ trợ cả về vật chất lẫn tinh thần, góp phần giúp các em có
+                        thêm cơ hội học tập và theo đuổi ước mơ.
+                    </p>
+
+
+                    <div class="p-6 bg-white/50 backdrop-blur-md rounded-3xl border-l-[6px] border-l-primary shadow-sm">
+                        <p class="text-slate-800 leading-relaxed font-semibold text-justify">
+                            🌟 Kế thừa và tiếp nối hành trình từ mùa trước, dự án Búp Sen Xanh vẫn giữ trọn tinh thần
+                            nhân văn khi lấy cảm hứng từ hình tượng “búp sen xanh” - biểu trưng cho những tâm hồn trẻ
+                            thơ trong sáng, giản dị nhưng đầy nghị lực. <br><br>
+                            Chúng mình tin rằng mỗi em nhỏ, dù trong hoàn cảnh khó khăn, vẫn mang trong mình một “hạt
+                            mầm hy vọng”, và dự án ra đời để nuôi dưỡng, tiếp sức, giúp những ước mơ ấy có cơ hội được
+                            vươn lên và tỏa sáng."
+                        </p>
+                    </div>
+                </div>
+
+
+                <!-- Cột Grid Ảnh -->
+                <div class="grid grid-cols-1 gap-5 lg:gap-6 h-full auto-rows-fr">
+                    <div
+                        class="liquid-glass p-2 img-hover-group shadow-xl bg-white/40 [&_img]:w-full [&_img]:h-full [&_img]:object-cover [&_img]:rounded-[1.2rem]">
+                        <img src="https://sv2.anhsieuviet.com/2026/04/05/linh.png" alt="linh.png" border="0">
+                    </div>
+                    <div
+                        class="liquid-glass p-2 img-hover-group shadow-md bg-white/40 [&_img]:w-full [&_img]:h-full [&_img]:object-cover [&_img]:rounded-[1.2rem]">
+                        <img src="https://sv2.anhsieuviet.com/2026/04/05/linh-2.png" alt="linh-2.png" border="0">
+                    </div>
+                    <div
+                        class="liquid-glass p-2 img-hover-group shadow-md bg-white/40 [&_img]:w-full [&_img]:h-full [&_img]:object-cover [&_img]:rounded-[1.2rem]">
+                        <img src="https://sv2.anhsieuviet.com/2026/04/05/linh-3.png" alt="linh-3.png" border="0">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Marquee dải ngang chia cắt -->
+        <div
+            class="w-full relative my-16 py-5 bg-primary shadow-xl transform -skew-y-2 fade-in border-y-4 border-primary/40">
+            <div class="marquee-container transform skew-y-2">
+                <div class="marquee-content text-white font-black text-2xl md:text-3xl tracking-[0.2em] uppercase">
+                    <!-- Nội dung lặp đôi -->
+                    <span>NEU • CFE FOUNDATION • BUP SEN XANH 2026 • GIEO HY VONG VE TUONG LAI • </span>
+                    <span>NEU • CFE FOUNDATION • BUP SEN XANH 2026 • GIEO HY VONG VE TUONG LAI • </span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Tạo Postcard Offline Render (Bố cục CẢI TIẾN) -->
+        <section id="tri-an" class="py-12 scroll-mt-24">
+            <div
+                class="liquid-glass p-8 md:p-12 mb-12 border-t-2 border-white/60 mx-auto w-full rounded-[3.5rem] shadow-2xl relative overflow-hidden bg-white/40">
+                <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-primary/20 rounded-full blur-[80px]">
+                </div>
+
+
+                <h2
+                    class="text-3xl md:text-5xl font-black text-center mb-10 text-primary uppercase tracking-tight flex items-center justify-center gap-4">
+                    <i data-lucide="award" class="w-10 h-10"></i> Tạo Postcard Tri Ân
+                </h2>
+
+
+                <div class="flex flex-col lg:flex-row gap-10">
+                    <!-- Form Nhập Liệu -->
+                    <div
+                        class="flex-1 space-y-8 bg-white/60 p-8 rounded-[2.5rem] shadow-inner border border-white/80 h-fit relative z-10">
+                        <div>
+                            <label class="block text-sm font-bold mb-3 text-slate-800 uppercase tracking-widest pl-2">Họ
+                                & Tên của bạn</label>
+                            <input type="text" id="userName" placeholder="Ví dụ: Nguyễn Văn A"
+                                class="w-full p-5 rounded-2xl border-2 border-primary/20 focus:border-primary outline-none font-bold text-lg text-slate-800 bg-white shadow-sm transition-all">
+                        </div>
+
+
+                        <div>
+                            <label
+                                class="block text-sm font-bold mb-3 text-slate-800 uppercase tracking-widest pl-2">Danh
+                                xưng trên thẻ</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="cursor-pointer relative">
+                                    <input type="radio" name="gender" value="Nam" checked
+                                        class="peer sr-only radio-custom">
+                                    <div
+                                        class="text-center p-4 rounded-2xl font-bold transition-all border-2 border-primary/20 bg-white text-primary peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary peer-hover:border-primary/50 shadow-sm flex items-center justify-center gap-2">
+                                        <i data-lucide="user" class="w-5 h-5"></i> NAM
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="radio" name="gender" value="Nữ" class="peer sr-only radio-custom">
+                                    <div
+                                        class="text-center p-4 rounded-2xl font-bold transition-all border-2 border-primary/20 bg-white text-primary peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary peer-hover:border-primary/50 shadow-sm flex items-center justify-center gap-2">
+                                        <i data-lucide="user" class="w-5 h-5"></i> NỮ
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <button onclick="generatePostcard()"
+                            class="w-full bg-primary hover:bg-secondary text-white font-black py-5 text-xl tracking-wider rounded-2xl shadow-[0_10px_25px_rgba(32,180,162,0.4)] transition-all btn-pulse flex items-center justify-center gap-2">
+                            <i data-lucide="sparkles" class="w-6 h-6"></i> XEM POSTCARD
+                        </button>
+
+
+                        <p id="ios-instruction"
+                            class="hidden text-rose-600 font-bold text-center mt-4 bg-rose-50 p-4 rounded-xl border border-rose-200 shadow-sm text-sm">
+                            ⚠️ Nếu nút lưu gặp lỗi trên iPhone/iPad: Vui lòng đè giữ tay vào ảnh kết quả bên cạnh và
+                            chọn "Lưu hình ảnh".
+                        </p>
+                    </div>
+
+
+                    <!-- Khung Hiển thị Kết Quả Ảnh -->
+                    <div class="flex-1 flex flex-col items-center justify-center">
+                        <p class="font-bold text-slate-500 mb-4 tracking-widest uppercase text-sm">Bản xem trước hình
+                            ảnh</p>
+
+
+                        <!-- Hiển thị khi chưa có ảnh -->
+                        <div id="postcard-placeholder"
+                            class="w-full max-w-[420px] aspect-[4/5] bg-white/50 border-2 border-dashed border-primary/30 rounded-[2rem] flex flex-col items-center justify-center text-slate-400 shadow-sm">
+                            <i data-lucide="image-plus" class="w-16 h-16 mb-4 opacity-50"></i>
+                            <span class="font-medium">Chưa có ảnh được tạo</span>
+                        </div>
+
+
+                        <!-- Khung load và chứa ảnh cuối -->
+                        <div id="postcard-preview"
+                            class="hidden w-full max-w-[420px] aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl relative border-[6px] border-white ring-1 ring-black/5 bg-slate-100">
+                            <!-- Loading state -->
+                            <div id="loading-spinner"
+                                class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10 hidden">
+                                <i data-lucide="loader" class="w-10 h-10 animate-spin text-primary"></i>
+                            </div>
+                            <!-- Result Image -->
+                            <div class="relative w-full h-full group">
+                                <img id="final-image" src="" alt="Postcard Tri Ân" class="w-full h-full object-cover">
+                                <!-- Rescue Layer (Overlay for Mobile) -->
+                                <div id="rescue-layer"
+                                    class="hidden absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center text-white p-6 text-center animate-fade-in pointer-events-none">
+                                    <div class="bg-primary/90 p-4 rounded-full mb-4 animate-bounce shadow-lg">
+                                        <i data-lucide="touchpad-off" class="w-10 h-10"></i>
+                                    </div>
+                                    <p class="font-black text-xl uppercase tracking-wider mb-2 drop-shadow-md">NHẤN GIỮ
+                                        ĐỂ LƯU</p>
+                                    <p class="text-xs font-bold opacity-90 leading-tight">Nếu nút "Tải về" bị
+                                        chặn,<br>hãy nhấn giữ vào ảnh này để chọn "Lưu hình ảnh"</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="mobile-tip"
+                            class="hidden mt-4 p-4 bg-emerald-50 text-emerald-800 rounded-2xl border border-emerald-200 text-sm font-bold flex items-center gap-2 animate-bounce">
+                            <i data-lucide="info" class="w-5 h-5"></i> Nhấn giữ vào ảnh trên để "Thêm vào Ảnh" / "Lưu
+                            hình ảnh"
+                        </div>
+
+
+                        <button id="download-btn" onclick="downloadImage()"
+                            class="hidden mt-8 bg-slate-800 hover:bg-slate-900 text-white px-10 py-4 rounded-2xl font-black tracking-widest shadow-xl transition-transform hover:-translate-y-1 w-full max-w-[420px] flex items-center justify-center gap-3">
+                            <i data-lucide="download"></i> TẢI ẢNH VỀ MÁY
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- VÙNG RENDER ẨN (DỰ DỰNG ĐỂ HTML2CANVAS CHỤP VỚI ĐỘ PHÂN GIẢI CAO TỈ LỆ 4:5 1080x1350) -->
+        <div id="postcard-render-area">
+            <!-- Xử lý CORS và cho phép replace chuỗi chính xác tuyệt đối -->
+            <div id="bg-source-wrapper"
+                class="absolute inset-0 z-0 overflow-hidden [&_img]:w-full [&_img]:h-full [&_img]:object-cover">
+                <img src="https://sv2.anhsieuviet.com/2026/04/08/THIT-K-CHO-KHANH-LAM-WEB-1080-x-1350-px.png"
+                    alt="THIT-K-CHO-KHANH-LAM-WEB-1080-x-1350-px.png" border="0">
+            </div>
+
+
+            <!-- Chữ render ghim chính giữa đáy -->
+            <div class="absolute bottom-0 left-0 right-0 z-20 text-center"
+                style="padding: 0 100px 210px 100px; font-family: 'Dancing Script', cursive;">
+                <p
+                    style="font-size: 42px; font-weight: 600; color: #fff; line-height: 1.5; text-shadow: 2px 4px 20px rgba(0,0,0,0.95); word-break: break-word; overflow-wrap: break-word;">
+                    <span id="render-greeting">Cảm ơn cô</span>&nbsp;<span id="render-name"
+                        style="color: #fef08a; font-weight: 700; text-shadow: 2px 6px 25px rgba(0,0,0,1);">Nguyễn Văn
+                        A</span>&nbsp;đã đồng hành cùng<br>Búp Sen Xanh
+                </p>
+            </div>
+        </div>
+
+
+        <!-- 7. Footer -->
+        <footer id="lien-he"
+            class="mt-10 bg-slate-900 rounded-[2.5rem] p-10 md:p-14 mb-8 shadow-2xl relative overflow-hidden text-white">
+            <!-- Decals hình chìm -->
+            <div class="absolute -right-20 -bottom-20 opacity-[0.05] pointer-events-none">
+                <i data-lucide="leaf" class="w-96 h-96"></i>
+            </div>
+
+
+            <div class="grid md:grid-cols-3 gap-10 relative z-10">
+                <div class="space-y-4">
+                    <h4 class="font-black text-primary text-2xl uppercase tracking-widest flex items-center gap-3">
+                        CFE Foundation
+                    </h4>
+                    <p class="text-slate-400 font-medium leading-relaxed pr-6">Dự án thiện nguyện Búp Sen Xanh 2026 -
+                        Thuộc CLB Doanh Nhân Tương Lai - Đại học Kinh Tế Quốc Dân (NEU) .</p>
+                </div>
+
+
+                <div>
+                    <h5
+                        class="font-black text-white mb-6 uppercase tracking-widest text-lg flex items-center gap-3 border-b border-primary/30 pb-3">
+                        <i data-lucide="contact" class="w-6 h-6 text-primary"></i> Liên hệ với chúng tôi
+                    </h5>
+                    <ul class="space-y-5 font-medium text-slate-300">
+                        <li class="flex items-start gap-4">
+                            <div class="p-2 bg-white/10 rounded-lg shrink-0">
+                                <i data-lucide="phone" class="text-primary w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-white mb-1">Hotline Ban Tổ Chức:</p>
+                                <p>Ms. Mai Anh - 0775 377 999</p>
+                                <p>Mr. Trần An - 0868 461 277</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-4">
+                            <div class="p-2 bg-white/10 rounded-lg shrink-0">
+                                <i data-lucide="mail" class="text-primary w-5 h-5"></i>
+                            </div>
+                            <p class="break-all font-bold">clbdoanhnhantuonglai.cfe16@gmail.com</p>
+                        </li>
+                    </ul>
+                </div>
+
+
+                <div>
+                    <h5
+                        class="font-black text-white mb-6 uppercase tracking-widest text-lg flex items-center gap-3 border-b border-primary/30 pb-3">
+                        <i data-lucide="globe" class="w-6 h-6 text-primary"></i> Mạng xã hội
+                    </h5>
+                    <a href="https://web.facebook.com/CFEFoundation" target="_blank"
+                        class="inline-flex items-center gap-3 px-6 py-4 bg-[#1877F2] hover:bg-[#0c59be] text-white rounded-xl font-bold transition-all shadow-lg hover:-translate-y-1 w-full justify-center">
+                        <i data-lucide="facebook"></i> THEO DÕI FANPAGE
+                    </a>
+                    <p class="text-center mt-6 text-slate-500 text-sm font-semibold tracking-wider">
+                        © 2026 PROJECT BÚP SEN XANH.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+    <!-- MAIN SCRIPT -->
+    <script>
+        lucide.createIcons();
+
+
+        // Navbar active underline: cập nhật khi cuộn trang
+        (function () {
+            const sections = [
+                { id: 'home', link: document.querySelector('a[href="#"]') },
+                { id: 'cau-chuyen', link: document.querySelector('a[href="#cau-chuyen"]') },
+                { id: 'tri-an', link: document.querySelector('a[href="#tri-an"]') },
+                { id: 'lien-he', link: document.querySelector('a[href="#lien-he"]') }
+            ];
+            function updateActiveNav() {
+                const scrollY = window.scrollY + 120;
+                let current = sections[0];
+                sections.forEach(s => {
+                    const el = document.getElementById(s.id);
+                    if (el && el.offsetTop <= scrollY) current = s;
+                });
+                sections.forEach(s => {
+                    if (s.link) s.link.classList.remove('active');
+                });
+                if (current.link) current.link.classList.add('active');
+            }
+            window.addEventListener('scroll', updateActiveNav, { passive: true });
+            updateActiveNav();
+        })();
+
+
+        const fetchWithTimeout = (url, ms) => {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), ms);
+            return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
+        };
+
+
+        async function generatePostcard() {
+            const nameInput = document.getElementById('userName').value.trim();
+            const genderValue = document.querySelector('input[name="gender"]:checked').value;
+
+            if (!nameInput) {
+                alert("Bạn vui lòng điền Tên của mình nha!");
+                document.getElementById('userName').focus();
+                return;
+            }
+
+            // Gán chữ vào form offline
+            const salutation = (genderValue === "Nam") ? "chú" : "cô";
+            document.getElementById('render-greeting').innerText = `Cảm ơn ${salutation}`;
+            document.getElementById('render-name').innerText = nameInput;
+
+            // Xử lý UI Loading
+            document.getElementById('postcard-placeholder').classList.add('hidden');
+            const previewArea = document.getElementById('postcard-preview');
+            previewArea.classList.remove('hidden');
+            const loading = document.getElementById('loading-spinner');
+            loading.classList.remove('hidden');
+
+            // Reset state cũ
+            const finalImage = document.getElementById('final-image');
+            finalImage.src = "";
+            finalImage.style.display = 'block';
+            const oldCanvas = previewArea.querySelector('canvas');
+            if (oldCanvas) oldCanvas.remove();
+
+            document.getElementById('download-btn').classList.add('hidden');
+            if (document.getElementById('mobile-tip')) document.getElementById('mobile-tip').classList.add('hidden');
+            if (document.getElementById('rescue-layer')) document.getElementById('rescue-layer').classList.add('hidden');
+
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            // Delay nhỏ để font kịp render
+            setTimeout(async () => {
+                try {
+                    // Fetch ảnh nền qua proxy để tránh CORS taint
+                    const bgImg = document.querySelector('#bg-source-wrapper img');
+                    const originalUrl = bgImg.getAttribute('data-original-src') || bgImg.getAttribute('src');
+                    bgImg.setAttribute('data-original-src', originalUrl);
+
+                    if (originalUrl && !originalUrl.startsWith('blob:') && !originalUrl.startsWith('data:')) {
+                        const noProto = originalUrl.replace(/^https?:\/\//, '');
+                        const corsProxies = [
+                            "https://wsrv.nl/?url=" + encodeURIComponent(noProto) + "&output=png",
+                            "https://api.allorigins.win/raw?url=" + encodeURIComponent(originalUrl),
+                            "https://corsproxy.io/?" + encodeURIComponent(originalUrl)
+                        ];
+                        let loaded = false;
+                        for (let proxy of corsProxies) {
+                            try {
+                                const res = await fetchWithTimeout(proxy, 6000);
+                                if (res.ok) {
+                                    const blob = await res.blob();
+                                    bgImg.src = URL.createObjectURL(blob);
+                                    await new Promise((resolve) => {
+                                        bgImg.onload = resolve;
+                                        bgImg.onerror = resolve;
+                                        setTimeout(resolve, 1500);
+                                    });
+                                    loaded = true;
+                                    break;
+                                }
+                            } catch (e) { }
+                        }
+                    }
+
+                    await new Promise(r => setTimeout(r, 400));
+
+                    // Rendering adaptive scale
+                    const renderArea = document.getElementById('postcard-render-area');
+                    const canvas = await html2canvas(renderArea, {
+                        useCORS: true,
+                        allowTaint: false,
+                        scale: isMobile ? 1.5 : 2, // Giảm scale trên mobile để tránh crash bộ nhớ
+                        backgroundColor: "#20b4a2",
+                        logging: false
+                    });
+
+                    loading.classList.add('hidden');
+
+                    let imgData = null;
+                    try {
+                        imgData = canvas.toDataURL("image/png", 0.9);
+                    } catch (taintError) {
+                        console.warn("Canvas bị taint, hiện thẳng canvas.");
+                        canvas.style.cssText = "width:100%;height:auto;border-radius:1.5rem;display:block;";
+                        finalImage.style.display = 'none';
+                        previewArea.appendChild(canvas);
+
+                        if (isMobile) {
+                            const mobileTip = document.getElementById('mobile-tip');
+                            if (mobileTip) mobileTip.classList.remove('hidden');
+                            const rescueLayer = document.getElementById('rescue-layer');
+                            if (rescueLayer) {
+                                rescueLayer.classList.remove('hidden');
+                                setTimeout(() => rescueLayer.classList.add('hidden'), 5000);
+                            }
+                        }
+                        return;
+                    }
+
+                    finalImage.src = imgData;
+                    finalImage.style.display = 'block';
+                    document.getElementById('download-btn').classList.remove('hidden');
+
+                    if (isMobile) {
+                        const mobileTip = document.getElementById('mobile-tip');
+                        if (mobileTip) {
+                            mobileTip.classList.remove('hidden');
+                            mobileTip.innerHTML = '<i data-lucide="info" class="w-5 h-5"></i> 💡 Gợi ý: Nếu không tải được, hãy đè giữ ảnh để lưu!';
+                            lucide.createIcons();
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Lỗi:", error);
+                    loading.classList.add('hidden');
+                    alert("Đã xảy ra lỗi. Vui lòng chụp màn hình nếu ảnh đã hiện ra.");
+                }
+            }, 300);
+        }
+
+
+        async function downloadImage() {
+            const img = document.getElementById('final-image');
+            if (!img || (!img.src && !img.dataset.blobUrl)) {
+                alert("Bạn vui lòng tạo postcard trước nha!");
+                return;
+            }
+
+            const btn = document.getElementById('download-btn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader" class="animate-spin w-5 h-5"></i> ĐANG XỬ LÝ...';
+            btn.disabled = true;
+
+            try {
+                const fileName = `Bup_Sen_Xanh_${Date.now()}.png`;
+                const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                const isAndroid = /Android/i.test(navigator.userAgent);
+
+                // Chuyển Data URL thành Blob
+                let blob;
+                if (img.src.startsWith('data:')) {
+                    const base64 = img.src.split(',')[1];
+                    const binary = atob(base64);
+                    const arr = new Uint8Array(binary.length);
+                    for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(binary.length - 1 - i === -1 ? 0 : i); // wait correction below
+                    // Better binary conversion
+                    const byteString = atob(img.src.split(',')[1]);
+                    const mimeString = img.src.split(',')[0].split(':')[1].split(';')[0];
+                    const ab = new ArrayBuffer(byteString.length);
+                    const ia = new Uint8Array(ab);
+                    for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+                    blob = new Blob([ab], { type: mimeString });
+                } else if (img.src.startsWith('blob:')) {
+                    const res = await fetch(img.src);
+                    blob = await res.blob();
+                }
+
+                // 1. Phân phối qua Share API (Dành cho Mobile, cực kỳ ổn định trên Android & iOS)
+                if (isMobile && navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'image/png' })] })) {
+                    try {
+                        await navigator.share({
+                            files: [new File([blob], fileName, { type: 'image/png' })],
+                            title: 'Thẻ Tri Ân Búp Sen Xanh',
+                        });
+                        btn.innerHTML = originalHTML;
+                        btn.disabled = false;
+                        return;
+                    } catch (e) {
+                        console.log("Share failed, fallback to download", e);
+                    }
+                }
+
+                // 2. Download truyền thống
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+
+                // Android Chrome / In-app fallback: Mở trong tab mới nếu link download không kích hoạt
+                if (isAndroid) {
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 500);
+                }
+
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 2000);
+
+            } catch (err) {
+                console.error("Download error:", err);
+                // Last resort: Rescue UI
+                const rescue = document.getElementById('rescue-layer');
+                if (rescue) {
+                    rescue.classList.remove('hidden');
+                    setTimeout(() => rescue.classList.add('hidden'), 5000);
+                }
+                alert("Hãy đè giữ vào ảnh để lưu thủ công nếu nút tải không hoạt động.");
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                lucide.createIcons();
+            }
+        }
+    </script>
+</body>
+
+
+</html>
